@@ -54,6 +54,36 @@ function App() {
     { id: 'settings', label: 'Settings', icon: '⚙️' }
   ]
 
+  const analyticsData = {
+    traffic: [
+      { date: '2024-01-01', visitors: 1200, pageViews: 3400, bounceRate: 45 },
+      { date: '2024-01-02', visitors: 1350, pageViews: 3800, bounceRate: 42 },
+      { date: '2024-01-03', visitors: 1100, pageViews: 3100, bounceRate: 48 },
+      { date: '2024-01-04', visitors: 1450, pageViews: 4200, bounceRate: 40 },
+      { date: '2024-01-05', visitors: 1600, pageViews: 4600, bounceRate: 38 },
+      { date: '2024-01-06', visitors: 1300, pageViews: 3700, bounceRate: 44 },
+      { date: '2024-01-07', visitors: 1550, pageViews: 4400, bounceRate: 39 }
+    ],
+    devices: [
+      { type: 'Desktop', users: 45, percentage: 45, color: '#3b82f6' },
+      { type: 'Mobile', users: 35, percentage: 35, color: '#10b981' },
+      { type: 'Tablet', users: 20, percentage: 20, color: '#f59e0b' }
+    ],
+    topPages: [
+      { page: '/dashboard', views: 5432, avgTime: '3:45', bounceRate: 32 },
+      { page: '/products', views: 4321, avgTime: '2:30', bounceRate: 28 },
+      { page: '/analytics', views: 3210, avgTime: '4:15', bounceRate: 35 },
+      { page: '/users', views: 2876, avgTime: '2:10', bounceRate: 42 },
+      { page: '/settings', views: 1543, avgTime: '1:45', bounceRate: 48 }
+    ],
+    conversionFunnel: [
+      { stage: 'Visitors', count: 10000, percentage: 100, color: '#3b82f6' },
+      { stage: 'Sign-ups', count: 2500, percentage: 25, color: '#10b981' },
+      { stage: 'Active Users', count: 1500, percentage: 15, color: '#f59e0b' },
+      { stage: 'Paying Customers', count: 750, percentage: 7.5, color: '#ef4444' }
+    ]
+  }
+
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -275,109 +305,286 @@ function App() {
             </div>
           </div>
 
-          {/* Activity Feed and Users Table */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
-            {/* Activity Feed */}
-            <div style={{
-              backgroundColor: cardBg,
-              padding: '24px',
-              borderRadius: '12px',
-              boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
-              border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
-            }}>
-              <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>Recent Activity</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {activities.map((activity, index) => (
-                  <div key={index} style={{
-                    padding: '12px',
-                    backgroundColor: darkMode ? '#334155' : '#f8fafc',
-                    borderRadius: '8px',
-                    borderLeft: `3px solid ${activity.type === 'success' ? '#10b981' : activity.type === 'error' ? '#ef4444' : activity.type === 'warning' ? '#f59e0b' : '#3b82f6'}`
+          {activeTab === 'overview' && (
+            <>
+              {/* Activity Feed and Users Table */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '20px' }}>
+                {/* Activity Feed */}
+                <div style={{
+                  backgroundColor: cardBg,
+                  padding: '24px',
+                  borderRadius: '12px',
+                  boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>Recent Activity</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {activities.map((activity, index) => (
+                      <div key={index} style={{
+                        padding: '12px',
+                        backgroundColor: darkMode ? '#334155' : '#f8fafc',
+                        borderRadius: '8px',
+                        borderLeft: `3px solid ${activity.type === 'success' ? '#10b981' : activity.type === 'error' ? '#ef4444' : activity.type === 'warning' ? '#f59e0b' : '#3b82f6'}`
+                      }}>
+                        <div style={{ fontWeight: '500', color: textColor, marginBottom: '4px' }}>
+                          {activity.user} {activity.action}
+                        </div>
+                        <div style={{ fontSize: '14px', color: subTextColor, marginBottom: '4px' }}>
+                          {activity.item}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                          {activity.time}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Users Table */}
+                <div style={{
+                  backgroundColor: cardBg,
+                  padding: '24px',
+                  borderRadius: '12px',
+                  boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>User Management</h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Name</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Email</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Status</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Role</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((user, index) => (
+                          <tr key={user.id} style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
+                            <td style={{ padding: '12px', color: textColor, fontSize: '14px' }}>{user.name}</td>
+                            <td style={{ padding: '12px', color: subTextColor, fontSize: '14px' }}>{user.email}</td>
+                            <td style={{ padding: '12px' }}>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                fontWeight: '500',
+                                backgroundColor: user.status === 'active' ? '#dcfce7' : '#fee2e2',
+                                color: user.status === 'active' ? '#166534' : '#991b1b'
+                              }}>
+                                {user.status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px', color: textColor, fontSize: '14px' }}>{user.role}</td>
+                            <td style={{ padding: '12px' }}>
+                              <button style={{
+                                padding: '6px 12px',
+                                backgroundColor: '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                marginRight: '8px'
+                              }}>
+                                Edit
+                              </button>
+                              <button style={{
+                                padding: '6px 12px',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                              }}>
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'analytics' && (
+            <>
+              {/* Analytics Page */}
+              <div style={{ display: 'grid', gap: '30px' }}>
+                {/* Traffic Overview */}
+                <div style={{
+                  backgroundColor: cardBg,
+                  padding: '24px',
+                  borderRadius: '12px',
+                  boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '20px' }}>Traffic Overview</h3>
+                  <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+                    {analyticsData.traffic.map((day, index) => (
+                      <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{
+                          width: '100%',
+                          backgroundColor: '#3b82f6',
+                          borderRadius: '4px 4px 0 0',
+                          height: `${(day.visitors / 2000) * 250}px`,
+                          position: 'relative'
+                        }}>
+                          <div style={{
+                            position: 'absolute',
+                            top: '-25px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            fontSize: '11px',
+                            color: subTextColor,
+                            fontWeight: '500'
+                          }}>
+                            {day.visitors}
+                          </div>
+                        </div>
+                        <div style={{ marginTop: '8px', fontSize: '11px', color: subTextColor }}>
+                          {new Date(day.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Analytics Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  {/* Device Analytics */}
+                  <div style={{
+                    backgroundColor: cardBg,
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                    border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
                   }}>
-                    <div style={{ fontWeight: '500', color: textColor, marginBottom: '4px' }}>
-                      {activity.user} {activity.action}
-                    </div>
-                    <div style={{ fontSize: '14px', color: subTextColor, marginBottom: '4px' }}>
-                      {activity.item}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                      {activity.time}
+                    <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>Device Analytics</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {analyticsData.devices.map((device, index) => (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{
+                            width: '40px',
+                            height: '40px',
+                            backgroundColor: device.color,
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}>
+                            {device.percentage}%
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: '500', color: textColor, marginBottom: '4px' }}>{device.type}</div>
+                            <div style={{ backgroundColor: darkMode ? '#334155' : '#e2e8f0', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
+                              <div style={{
+                                backgroundColor: device.color,
+                                height: '100%',
+                                width: `${device.percentage}%`,
+                                transition: 'width 0.3s ease'
+                              }} />
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '14px', color: subTextColor, minWidth: '50px' }}>
+                            {device.users}%
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Users Table */}
-            <div style={{
-              backgroundColor: cardBg,
-              padding: '24px',
-              borderRadius: '12px',
-              boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
-              border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
-            }}>
-              <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>User Management</h3>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
-                      <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Name</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Email</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Status</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Role</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user, index) => (
-                      <tr key={user.id} style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '12px', color: textColor, fontSize: '14px' }}>{user.name}</td>
-                        <td style={{ padding: '12px', color: subTextColor, fontSize: '14px' }}>{user.email}</td>
-                        <td style={{ padding: '12px' }}>
-                          <span style={{
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            backgroundColor: user.status === 'active' ? '#dcfce7' : '#fee2e2',
-                            color: user.status === 'active' ? '#166534' : '#991b1b'
+                  {/* Conversion Funnel */}
+                  <div style={{
+                    backgroundColor: cardBg,
+                    padding: '24px',
+                    borderRadius: '12px',
+                    boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                    border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                  }}>
+                    <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>Conversion Funnel</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {analyticsData.conversionFunnel.map((stage, index) => (
+                        <div key={index} style={{
+                          padding: '12px',
+                          backgroundColor: darkMode ? '#334155' : '#f8fafc',
+                          borderRadius: '8px',
+                          borderLeft: `4px solid ${stage.color}`,
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}>
+                          <div>
+                            <div style={{ fontWeight: '500', color: textColor }}>{stage.stage}</div>
+                            <div style={{ fontSize: '12px', color: subTextColor }}>{stage.count.toLocaleString()} users</div>
+                          </div>
+                          <div style={{
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            color: stage.color
                           }}>
-                            {user.status}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px', color: textColor, fontSize: '14px' }}>{user.role}</td>
-                        <td style={{ padding: '12px' }}>
-                          <button style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#3b82f6',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            marginRight: '8px'
-                          }}>
-                            Edit
-                          </button>
-                          <button style={{
-                            padding: '6px 12px',
-                            backgroundColor: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            {stage.percentage}%
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Pages */}
+                <div style={{
+                  backgroundColor: cardBg,
+                  padding: '24px',
+                  borderRadius: '12px',
+                  boxShadow: darkMode ? '0 1px 3px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+                  border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0'
+                }}>
+                  <h3 style={{ margin: '0 0 20px 0', color: textColor, fontSize: '18px' }}>Top Pages</h3>
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Page</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Views</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Avg. Time</th>
+                          <th style={{ padding: '12px', textAlign: 'left', color: subTextColor, fontSize: '14px', fontWeight: '600' }}>Bounce Rate</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analyticsData.topPages.map((page, index) => (
+                          <tr key={index} style={{ borderBottom: darkMode ? '1px solid #334155' : '1px solid #e2e8f0' }}>
+                            <td style={{ padding: '12px', color: textColor, fontSize: '14px', fontWeight: '500' }}>{page.page}</td>
+                            <td style={{ padding: '12px', color: subTextColor, fontSize: '14px' }}>{page.views.toLocaleString()}</td>
+                            <td style={{ padding: '12px', color: subTextColor, fontSize: '14px' }}>{page.avgTime}</td>
+                            <td style={{ padding: '12px' }}>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                fontWeight: '500',
+                                backgroundColor: page.bounceRate < 35 ? '#dcfce7' : page.bounceRate < 45 ? '#fef3c7' : '#fee2e2',
+                                color: page.bounceRate < 35 ? '#166534' : page.bounceRate < 45 ? '#92400e' : '#991b1b'
+                              }}>
+                                {page.bounceRate}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>
